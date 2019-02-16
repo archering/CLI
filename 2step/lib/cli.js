@@ -12,6 +12,8 @@ var color = require("./color");
 var dim = require("./dim");
 var greeting = require("./greeting");
 var draw = require("./draw");
+var os = require("os");
+var v8 = require("v8");
 
 class _events extends events {
 
@@ -80,7 +82,29 @@ cli.responder.exit = function(str){
     process.exit(0);
 }
 cli.responder.stats = function(str){
-    console.log("you just typed [" + str + "]");
+    var stats = {
+        "Platfoem": os.platform(),
+        'CPU Count':os.cpus().length+'',
+        'Free Mems':os.freemem()+'',
+        "uptime":os.uptime()+'(s)',
+        'Current Mems':v8.getHeapStatistics().malloced_memory+'',
+        'Peak Mems':v8.getHeapStatistics().peak_malloced_memory+''
+    }
+
+    var keys =  Object.keys(stats);
+    var padding = 10;
+    var headers = "";
+    var cols = "";
+    for(var i=0;i<keys.length;i++){
+        headers += keys[i] + dim.left(padding);
+        cols += stats[keys[i]] + dim.left(keys[i].length + padding - stats[keys[i]].length);
+    }
+    dim.top(1);
+    draw.text(headers);
+    draw.hr("¯");
+    draw.text(cols);
+    dim.top(1);
+    
 }
 cli.responder.listUsers = function(str){
     console.log("you just typed [" + str + "]");

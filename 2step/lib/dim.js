@@ -23,6 +23,7 @@ dimension.center = function(){
 dimension.left = function(col,tag){
     col = typeof(col)=="number"?col:1;
     tag = tag && typeof(tag) == "string"?tag:" ";
+    if(col<=0 || isNaN(col)) col = 0;
     var arr = new Array(col+1);
     return arr.join(tag);
 }
