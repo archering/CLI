@@ -9,30 +9,15 @@ var util = require("util");
 var debug = util.debuglog("cli");
 var events = require("events");
 var color = require("./color");
-var dim = require("./dim");
 var greeting = require("./greeting");
-var draw = require("./draw");
-var os = require("os");
-var v8 = require("v8");
-
+var responder = require("./responder");
+var dat = require("./const");
+const CMDS  = Object.keys(dat.SUPPORT);
 class _events extends events {
 
 } 
 var  e = new _events();
 
-const SUPPORT = {
-    'man':"show menu",
-    'help':"alias for man ; show menu",
-    'exit':"shutdown the CLI",
-    'stats':"show current sys status",
-    'list user':"list all login users",
-    'list checks':"list all checks",
-    'more check info':"more check info --{infoID}  show the specific info detail",
-    'list logs':"show logs",
-    'more log info':"more log info --{logId}   show the specific log detail"
-}
-//consts
-const CMDS = Object.keys(SUPPORT);
 
 // CLI core
 var cli = {};
@@ -40,88 +25,32 @@ var cli = {};
 
 //handle user input triggered events
 e.on("man",function(str){
-    cli.responder.help(str);
+    responder.help(str);
 });
 e.on("help",function(str){
-    cli.responder.help(str);
+    responder.help(str);
 });
 e.on("exit",function(str){
-    cli.responder.exit(str);
+    responder.exit(str);
 });
 e.on("stats",function(str){
-    cli.responder.stats(str);
+    responder.stats(str);
 });
 e.on("list users",function(str){
-    cli.responder.listUsers(str);
+    responder.listUsers(str);
 });
 e.on("list checks",function(str){
-    cli.responder.listChecks(str);
+    responder.listChecks(str);
 });
 e.on("more check info",function(str){
-    cli.responder.moreCheckInfo(str);
+    responder.moreCheckInfo(str);
 });
 e.on("list logs",function(str){
-    cli.responder.listLogs(str);
+    responder.listLogs(str);
 });
 e.on("more log info",function(str){
-    cli.responder.moreLogInfo(str);
+    responder.moreLogInfo(str);
 });
-//deal input and give some response
-cli.responder = {};
-cli.responder.help = function(str){
-    draw.text2("How to use this CLI",'redbg',"-");
-    dim.top(1);
-    for(var i=0;i<CMDS.length;i++){
-        draw.text(CMDS[i] + dim.left(40-CMDS[i].length) + SUPPORT[CMDS[i]]);
-    }
-    dim.top(1);
-    draw.hr();
-
-} 
-cli.responder.exit = function(str){
-    process.exit(0);
-}
-cli.responder.stats = function(str){
-    var stats = {
-        "Platfoem": os.platform(),
-        'CPU Count':os.cpus().length+'',
-        'Free Mems':os.freemem()+'',
-        "uptime":os.uptime()+'(s)',
-        'Current Mems':v8.getHeapStatistics().malloced_memory+'',
-        'Peak Mems':v8.getHeapStatistics().peak_malloced_memory+''
-    }
-
-    var keys =  Object.keys(stats);
-    var padding = 10;
-    var headers = "";
-    var cols = "";
-    for(var i=0;i<keys.length;i++){
-        headers += keys[i] + dim.left(padding);
-        cols += stats[keys[i]] + dim.left(keys[i].length + padding - stats[keys[i]].length);
-    }
-    dim.top(1);
-    draw.text(headers);
-    draw.hr("¯");
-    draw.text(cols);
-    dim.top(1);
-    
-}
-cli.responder.listUsers = function(str){
-    console.log("you just typed [" + str + "]");
-}  
-cli.responder.listChecks = function(str){
-    console.log("you just typed [" + str + "]");
-} 
-cli.responder.moreCheckInfo = function(str){
-    console.log("you just typed [" + str + "]");
-} 
-cli.responder.listLogs = function(str){
-    console.log("you just typed [" + str + "]");
-} 
-cli.responder.moreLogInfo = function(str){
-    console.log("you just typed [" + str + "]");
-} 
-
 
 //user input process
 cli.processInput = function(str){
